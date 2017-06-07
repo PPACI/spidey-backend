@@ -48,7 +48,7 @@ dependencies {
 	compile("org.jetbrains.kotlin:kotlin-stdlib-jre8:${kotlinVersion}")
 	compile("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
 	compile('io.reactivex.rxjava2:rxjava')
-    compile('org.springframework.boot:spring-boot-devtools:1.5.3.RELEASE')
+    compile('org.springframework.boot:spring-boot-devtools')
 //	compile('io.reactivex.rxjava2:rxkotlin')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }

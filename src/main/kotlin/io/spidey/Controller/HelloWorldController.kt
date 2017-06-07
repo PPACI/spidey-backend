@@ -5,9 +5,7 @@ import io.reactivex.Single
 import io.spidey.Services.TwitterService
 import org.springframework.social.twitter.api.Tweet
 import org.springframework.social.twitter.api.TwitterProfile
-import org.springframework.social.twitter.api.impl.TwitterTemplate
 import org.springframework.web.bind.annotation.*
-import java.util.*
 
 @RestController
 @RequestMapping("/")
@@ -18,13 +16,18 @@ class HelloWorldController constructor(val TwitterService: TwitterService) {
     fun hello(): Single<String> = Single.just("hello world").map { it.toUpperCase() }
 
     @GetMapping("/search")
-    fun hello_search(@RequestParam("number") number:Int?): Flowable<Tweet> {
+    fun HelloSearch(@RequestParam("number") number:Int?): Flowable<Tweet> {
         return this.TwitterService.getHelloWorldTweets(number = number ?: 1)
     }
 
     @GetMapping("/user/{user_id}")
-    fun get_user(@PathVariable user_id:String): Flowable<TwitterProfile>{
-        return this.TwitterService.getUser(user_id)
+    fun getUserTimeline(@PathVariable user_id:String): Flowable<TwitterProfile>{
+        return this.TwitterService.getUserTimeline(user_id)
+    }
+
+    @GetMapping("/graph/{user_id}")
+    fun getUserGraph(@PathVariable user_id:String): Flowable<TwitterProfile>{
+        return this.TwitterService.getUserGraph(user_id)
     }
 
 }

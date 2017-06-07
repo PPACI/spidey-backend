@@ -17,7 +17,19 @@ class TwitterService {
         ).tweets)
     }
 
-    fun getUser(user_id: String): Flowable<TwitterProfile> {
+    fun getUserTimeline(user_id: String): Flowable<TwitterProfile> {
         return Flowable.just(this.twitter.userOperations().getUserProfile(user_id))
+    }
+
+    fun getUserGraph(user_id: String): Flowable<TwitterProfile> {
+        return Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(user_id))
+                .map { it.fromUserId }
+                .distinct()
+                .flatMap { Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(it)) }
+                .map { it.fromUserId }
+                .distinct()
+                .flatMap { Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(it)) }
+                .distinct()
+                .map { it.user }
     }
 }
