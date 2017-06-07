@@ -3,6 +3,7 @@ package io.spidey.Services
 import io.reactivex.Flowable
 import org.springframework.social.twitter.api.SearchParameters
 import org.springframework.social.twitter.api.Tweet
+import org.springframework.social.twitter.api.TwitterProfile
 import org.springframework.social.twitter.api.impl.TwitterTemplate
 import org.springframework.stereotype.Service
 
@@ -14,5 +15,9 @@ class TwitterService {
         return Flowable.fromIterable(this.twitter.searchOperations().search(
                 SearchParameters("hello world").count(number)
         ).tweets)
+    }
+
+    fun getUser(user_id: String): Flowable<TwitterProfile> {
+        return Flowable.just(this.twitter.userOperations().getUserProfile(user_id))
     }
 }
