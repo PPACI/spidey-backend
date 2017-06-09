@@ -21,15 +21,16 @@ class TwitterService {
         return Flowable.just(this.twitter.userOperations().getUserProfile(user_id))
     }
 
-    fun getUserGraph(user_id: String): Flowable<TwitterProfile> {
-        return Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(user_id))
-                .map { it.fromUserId }
+    fun getUserGraph(user: String): Flowable<Pair<String, String>> {
+        val first_level = Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(user).map { Pair(user, it) })
+                .map { Pair(it.first, it.second.fromUser) }
                 .distinct()
-                .flatMap { Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(it)) }
-                .map { it.fromUserId }
+        val second_level = first_level.flatMap { pair -> Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(pair.second).map { Pair(pair.second, it) }) }
+                .map { Pair(it.first, it.second.fromUser) }
                 .distinct()
-                .flatMap { Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(it)) }
+        val third_level = second_level.flatMap { pair -> Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(pair.second).map { Pair(pair.second, it) }) }
+                .map { Pair(it.first, it.second.fromUser) }
                 .distinct()
-                .map { it.user }
+        return Flowable.merge(first_level, second_level, third_level)
     }
 }
