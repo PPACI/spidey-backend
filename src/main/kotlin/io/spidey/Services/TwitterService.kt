@@ -25,7 +25,7 @@ class TwitterService {
 
     fun getUserGraph(user: String): SigmaJsGraph {
         val graph = SigmaJsGraph()
-        val first_level = Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(user,5).map { Pair(user, it) })
+        val first_level = Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(user,10).map { Pair(user, it) })
                 .map { Pair(it.first, it.second.fromUser) }
         val second_level = first_level.flatMap { pair -> Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(pair.second, 5).map { Pair(pair.second, it) }) }
                 .map { Pair(it.first, it.second.fromUser) }
