@@ -27,9 +27,9 @@ class TwitterService {
         val graph = SigmaJsGraph()
         val first_level = Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(user,5).map { Pair(user, it) })
                 .map { Pair(it.first, it.second.fromUser) }
-        val second_level = first_level.flatMap { pair -> Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(pair.second, 3).map { Pair(pair.second, it) }) }
+        val second_level = first_level.flatMap { pair -> Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(pair.second, 5).map { Pair(pair.second, it) }) }
                 .map { Pair(it.first, it.second.fromUser) }
-        val third_level = second_level.flatMap { pair -> Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(pair.second, 3).map { Pair(pair.second, it) }) }
+        val third_level = second_level.flatMap { pair -> Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(pair.second, 5).map { Pair(pair.second, it) }) }
                 .map { Pair(it.first, it.second.fromUser) }
         Flowable.merge(first_level, second_level, third_level)
                 .distinct()
