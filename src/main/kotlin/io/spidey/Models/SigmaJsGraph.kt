@@ -43,6 +43,13 @@ class Node {
     override fun hashCode(): Int {
         return this.id.hashCode()
     }
+
+    override fun equals(other: Any?): Boolean {
+        when (other){
+            is Node -> return this.id == other.id
+            else -> return false
+        }
+    }
 }
 
 /**
