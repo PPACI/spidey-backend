@@ -2,6 +2,7 @@ package io.spidey.Controller
 
 import io.reactivex.Flowable
 import io.reactivex.Single
+import io.spidey.Models.SigmaJsGraph
 import io.spidey.Services.TwitterService
 import org.springframework.social.twitter.api.Tweet
 import org.springframework.social.twitter.api.TwitterProfile
@@ -26,7 +27,7 @@ class HelloWorldController constructor(val TwitterService: TwitterService) {
     }
 
     @GetMapping("/graph/{user_id}")
-    fun getUserGraph(@PathVariable user_id: String): Flowable<Pair<String, String>> {
+    fun getUserGraph(@PathVariable user_id: String): SigmaJsGraph {
         return this.TwitterService.getUserGraph(user_id)
     }
 

@@ -1,6 +1,8 @@
 package io.spidey.Services
 
 import io.reactivex.Flowable
+import io.spidey.Models.Node
+import io.spidey.Models.SigmaJsGraph
 import org.springframework.social.twitter.api.SearchParameters
 import org.springframework.social.twitter.api.Tweet
 import org.springframework.social.twitter.api.TwitterProfile
@@ -21,16 +23,18 @@ class TwitterService {
         return Flowable.just(this.twitter.userOperations().getUserProfile(user_id))
     }
 
-    fun getUserGraph(user: String): Flowable<Pair<String, String>> {
+    fun getUserGraph(user: String): SigmaJsGraph {
+        val graph = SigmaJsGraph()
         val first_level = Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(user).map { Pair(user, it) })
                 .map { Pair(it.first, it.second.fromUser) }
-                .distinct()
         val second_level = first_level.flatMap { pair -> Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(pair.second).map { Pair(pair.second, it) }) }
                 .map { Pair(it.first, it.second.fromUser) }
-                .distinct()
         val third_level = second_level.flatMap { pair -> Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(pair.second).map { Pair(pair.second, it) }) }
                 .map { Pair(it.first, it.second.fromUser) }
+        Flowable.merge(first_level, second_level, third_level)
                 .distinct()
-        return Flowable.merge(first_level, second_level, third_level)
+                .map { Pair(Node(it.first), Node(it.second)) }
+                .subscribe{graph.AddRelation(sourceNode = it.first, targetNode = it.second)}
+        return graph
     }
 }

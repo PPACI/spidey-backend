@@ -50,9 +50,9 @@ class Edge(sourceNode: Node, targetNode: Node) {
 }
 
 /**
- * A Graph is the SigmaJS data format model, composed of nodes and edges
+ * A SigmaJsGraph is the SigmaJS data format model, composed of nodes and edges
  */
-class Graph {
+class SigmaJsGraph {
     val nodes = HashSet<Node>()
     val edges = HashSet<Edge>()
 
