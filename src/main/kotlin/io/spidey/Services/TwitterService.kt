@@ -34,7 +34,7 @@ class TwitterService {
         Flowable.merge(first_level, second_level, third_level)
                 .distinct()
                 .map { Pair(Node(it.first), Node(it.second)) }
-                .subscribe{graph.AddRelation(sourceNode = it.first, targetNode = it.second)}
+                .subscribe{graph.addRelation(sourceNode = it.first, targetNode = it.second)}
         return graph
     }
 }

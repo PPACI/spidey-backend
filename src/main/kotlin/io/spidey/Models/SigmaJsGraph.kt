@@ -8,27 +8,30 @@ import kotlin.collections.HashSet
  * A node represent a point on a SigmaJS graph
  */
 class Node {
+
+    companion object {
+        val rng = Random(0)
+    }
+
     val id: String
     val label: String
     val size: Int
     val color: String
-    val x: Float
-    val y: Float
+    val x: Int
+    val y: Int
 
 
     constructor(label: String, size: Int = 1, color: String = "#000") {
-        this.id = label // since the label is the unique twitter user_name
+        this.x = rng.nextInt() * 100
+        this.y = rng.nextInt() * 100
+
+        this.id = label + '-' + this.x + '-' + this.y // since the label is the unique twitter user_name
         this.label = label
         this.size = size
         this.color = color
-
-        val rng = Random(0)
-        this.x = rng.nextFloat() * 64 - 32
-        this.y = rng.nextFloat() * 64 - 32
     }
 
-
-    constructor(label: String, size: Int = 1, color: String = "#000", x: Float, y: Float){
+    constructor(label: String, size: Int = 1, color: String = "#000", x: Int, y: Int){
         this.id = label
         this.label = label
         this.size = size
@@ -36,7 +39,6 @@ class Node {
         this.x = x
         this.y = y
     }
-
 
 }
 
@@ -56,7 +58,7 @@ class SigmaJsGraph {
     val nodes = HashSet<Node>()
     val edges = HashSet<Edge>()
 
-    fun AddRelation(sourceNode:Node, targetNode: Node){
+    fun addRelation(sourceNode:Node, targetNode: Node){
         this.nodes.addAll(arrayOf(sourceNode,targetNode))
         val edge = Edge(sourceNode = sourceNode, targetNode = targetNode)
         this.edges.add(edge)
