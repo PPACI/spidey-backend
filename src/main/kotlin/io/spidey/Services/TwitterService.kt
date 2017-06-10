@@ -23,18 +23,33 @@ class TwitterService {
         return Flowable.just(this.twitter.userOperations().getUserProfile(user_id))
     }
 
+    /**
+     * TODO: use the user_timeline (https://dev.twitter.com/rest/reference/get/statuses/user_timeline)
+     * It return an array of tweet from the selected user including retweet and reply.
+     * In case of retweet, we could extract the original tweet then the author.
+     * In case of replay, we could directly extract the author.
+     * A function to do this job depending on retweet/reply status and returning a user_name should be done.
+     */
     fun getUserGraph(user: String): SigmaJsGraph {
         val graph = SigmaJsGraph()
-        val first_level = Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(user,10).map { Pair(user, it) })
-                .map { Pair(it.first, it.second.fromUser) }
-        val second_level = first_level.flatMap { pair -> Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(pair.second, 5).map { Pair(pair.second, it) }) }
-                .map { Pair(it.first, it.second.fromUser) }
-        val third_level = second_level.flatMap { pair -> Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(pair.second, 5).map { Pair(pair.second, it) }) }
-                .map { Pair(it.first, it.second.fromUser) }
+        val first_level = Flowable.fromIterable(GetPairsOfRelation(user))
+                .take(50)
+        val second_level = first_level.flatMap { pair -> Flowable.fromIterable(GetPairsOfRelation(pair.second)) }
+                .take(100)
+        val third_level = second_level.flatMap { pair -> Flowable.fromIterable(GetPairsOfRelation(pair.second)) }
+                .take(200)
         Flowable.merge(first_level, second_level, third_level)
                 .distinct()
                 .map { Pair(Node(it.first), Node(it.second)) }
                 .subscribe{graph.addRelation(sourceNode = it.first, targetNode = it.second)}
         return graph
+    }
+
+    fun GetPairsOfRelation(screen_name:String):List<Pair<String, String>>{
+        return this.twitter.timelineOperations().getUserTimeline(screen_name,200)
+                .map { it.retweetedStatus?.fromUser ?: it.inReplyToScreenName}
+                .filterNotNull()
+                .distinct()
+                .map { Pair(screen_name, it) }
     }
 }
