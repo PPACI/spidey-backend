@@ -1,6 +1,7 @@
 package io.spidey.Models
 
 import java.util.*
+import kotlin.collections.HashSet
 
 
 /**
@@ -42,7 +43,8 @@ class Node {
 /**
  * An Edge represent the link between two nodes in SigmaJS graph
  */
-class Edge(val id: String, sourceNode: Node, targetNode: Node) {
+class Edge(sourceNode: Node, targetNode: Node) {
+    val id = "${sourceNode.id}-${targetNode.id}"
     val source = sourceNode.id
     val target = targetNode.id
 }
@@ -51,6 +53,12 @@ class Edge(val id: String, sourceNode: Node, targetNode: Node) {
  * A Graph is the SigmaJS data format model, composed of nodes and edges
  */
 class Graph {
-    val nodes = ArrayList<Node>()
-    val edges = ArrayList<Edge>()
+    val nodes = HashSet<Node>()
+    val edges = HashSet<Edge>()
+
+    fun AddRelation(sourceNode:Node, targetNode: Node){
+        this.nodes.addAll(arrayOf(sourceNode,targetNode))
+        val edge = Edge(sourceNode = sourceNode, targetNode = targetNode)
+        this.edges.add(edge)
+    }
 }
