@@ -26,11 +26,14 @@ class TwitterService {
     fun getUserGraph(user: String): SigmaJsGraph {
         val graph = SigmaJsGraph()
         val first_level = Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(user).map { Pair(user, it) })
+                .take(50)
                 .map { Pair(it.first, it.second.fromUser) }
         val second_level = first_level.flatMap { pair -> Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(pair.second).map { Pair(pair.second, it) }) }
                 .map { Pair(it.first, it.second.fromUser) }
+                .take(50)
         val third_level = second_level.flatMap { pair -> Flowable.fromIterable(this.twitter.timelineOperations().getFavorites(pair.second).map { Pair(pair.second, it) }) }
                 .map { Pair(it.first, it.second.fromUser) }
+                .take(50)
         Flowable.merge(first_level, second_level, third_level)
                 .distinct()
                 .map { Pair(Node(it.first), Node(it.second)) }

@@ -28,7 +28,7 @@ class Node {
     }
 
 
-    constructor(label: String, size: Int = 1, color: String = "#000", x: Float, y: Float){
+    constructor(label: String, size: Int = 1, color: String = "#000", x: Float, y: Float) {
         this.id = label
         this.label = label
         this.size = size
@@ -37,7 +37,10 @@ class Node {
         this.y = y
     }
 
-
+    override fun hashCode(): Int {
+        val hash = 3 * this.id.hashCode() + 5 * this.label.hashCode()
+        return hash
+    }
 }
 
 /**
@@ -56,8 +59,8 @@ class SigmaJsGraph {
     val nodes = HashSet<Node>()
     val edges = HashSet<Edge>()
 
-    fun AddRelation(sourceNode:Node, targetNode: Node){
-        this.nodes.addAll(arrayOf(sourceNode,targetNode))
+    fun AddRelation(sourceNode: Node, targetNode: Node) {
+        this.nodes.addAll(arrayOf(sourceNode, targetNode))
         val edge = Edge(sourceNode = sourceNode, targetNode = targetNode)
         this.edges.add(edge)
     }
