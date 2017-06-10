@@ -22,10 +22,10 @@ class Node {
 
 
     constructor(label: String, size: Int = 1, color: String = "#000") {
-        this.x = rng.nextInt() * 100
-        this.y = rng.nextInt() * 100
+        this.x = rng.nextInt(100)
+        this.y = rng.nextInt(100)
 
-        this.id = label + '-' + this.x + '-' + this.y // since the label is the unique twitter user_name
+        this.id = label // since the label is the unique twitter user_name
         this.label = label
         this.size = size
         this.color = color
@@ -41,8 +41,7 @@ class Node {
     }
 
     override fun hashCode(): Int {
-        val hash = 3 * this.id.hashCode() + 5 * this.label.hashCode()
-        return hash
+        return this.id.hashCode()
     }
 }
 
