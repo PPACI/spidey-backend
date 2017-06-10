@@ -12,7 +12,7 @@ class SpideyConfiguration {
     fun corsConfig(): WebMvcConfigurer {
         class WebConfig : WebMvcConfigurer {
             override fun addCorsMappings(registry: CorsRegistry) {
-                registry.addMapping("*");
+                registry.addMapping("/**")
             }
 
         }
