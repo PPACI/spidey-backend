@@ -23,13 +23,7 @@ class TwitterService {
         return Flowable.just(this.twitter.userOperations().getUserProfile(user_id))
     }
 
-    /**
-     * TODO: use the user_timeline (https://dev.twitter.com/rest/reference/get/statuses/user_timeline)
-     * It returns an array of tweets from the selected screen_name including retweets and replies.
-     * In case of retweet, we could extract the original tweet then the author.
-     * In case of reply, we could directly extract the author.
-     * A function to do this job depending on retweet/reply status and returning a user_name should be done.
-     */
+
     fun getUserGraph(screen_name: String): SigmaJsGraph {
         val graph = SigmaJsGraph()
         val first_level = Flowable.fromIterable(GetPairsOfRelation(screen_name))
