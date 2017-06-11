@@ -25,9 +25,9 @@ class TwitterService {
 
     /**
      * TODO: use the user_timeline (https://dev.twitter.com/rest/reference/get/statuses/user_timeline)
-     * It return an array of tweet from the selected screen_name including retweet and reply.
+     * It returns an array of tweets from the selected screen_name including retweets and replies.
      * In case of retweet, we could extract the original tweet then the author.
-     * In case of replay, we could directly extract the author.
+     * In case of reply, we could directly extract the author.
      * A function to do this job depending on retweet/reply status and returning a user_name should be done.
      */
     fun getUserGraph(screen_name: String): SigmaJsGraph {
@@ -38,6 +38,7 @@ class TwitterService {
                 .take(300)
         val third_level = second_level.flatMap { pair -> Flowable.fromIterable(GetPairsOfRelation(pair.second)) }
                 .take(500)
+
         Flowable.merge(first_level, second_level, third_level)
                 .distinct()
                 .map { Pair(Node(it.first), Node(it.second)) }
