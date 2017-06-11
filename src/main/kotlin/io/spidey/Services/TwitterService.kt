@@ -13,14 +13,9 @@ import org.springframework.stereotype.Service
 class TwitterService {
     val twitter = TwitterTemplate("qPe0o5axovP4VlGnv9bDchVwI", "yFWHo5mHwIy99jlTfgp2loSpnRlGLMwRvpNJqqFC6NQQfqal15")
 
-    fun getHelloWorldTweets(number: Int): Flowable<Tweet> {
-        return Flowable.fromIterable(this.twitter.searchOperations().search(
-                SearchParameters("hello world").count(number)
-        ).tweets)
-    }
 
-    fun getUserTimeline(user_id: String): Flowable<TwitterProfile> {
-        return Flowable.just(this.twitter.userOperations().getUserProfile(user_id))
+    fun getUser(user_id: String): TwitterProfile {
+        return this.twitter.userOperations().getUserProfile(user_id)
     }
 
 
@@ -36,13 +31,13 @@ class TwitterService {
         Flowable.merge(first_level, second_level, third_level)
                 .distinct()
                 .map { Pair(Node(it.first), Node(it.second)) }
-                .subscribe{graph.addRelation(sourceNode = it.first, targetNode = it.second)}
+                .subscribe { graph.addRelation(sourceNode = it.first, targetNode = it.second) }
         return graph
     }
 
-    fun GetPairsOfRelation(screen_name:String):List<Pair<String, String>>{
-        return this.twitter.timelineOperations().getUserTimeline(screen_name,200)
-                .map { it.retweetedStatus?.fromUser ?: it.inReplyToScreenName}
+    fun GetPairsOfRelation(screen_name: String): List<Pair<String, String>> {
+        return this.twitter.timelineOperations().getUserTimeline(screen_name, 200)
+                .map { it.retweetedStatus?.fromUser ?: it.inReplyToScreenName }
                 .filterNotNull()
                 .distinct()
                 .map { Pair(screen_name, it) }
