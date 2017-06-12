@@ -15,13 +15,13 @@ class Node {
 
     val id: String
     val label: String
-    val size: Int
+    val size: Float
     val color: String
     val x: Int
     val y: Int
 
 
-    constructor(label: String, size: Int = 1, color: String = "#000") {
+    constructor(label: String, size: Float = 0.2F, color: String = "#444") {
         this.x = rng.nextInt(100)
         this.y = rng.nextInt(100)
 
@@ -31,7 +31,7 @@ class Node {
         this.color = color
     }
 
-    constructor(label: String, size: Int = 1, color: String = "#000", x: Int, y: Int){
+    constructor(label: String, size: Float = 0.2F, color: String = "#444", x: Int, y: Int){
         this.id = label
         this.label = label
         this.size = size

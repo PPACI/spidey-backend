@@ -1,7 +1,6 @@
 package io.spidey.Controller
 
 import io.reactivex.Flowable
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.spidey.Models.SigmaJsGraph
 import io.spidey.Models.TwitterUser

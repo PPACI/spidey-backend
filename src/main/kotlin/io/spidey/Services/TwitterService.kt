@@ -1,7 +1,6 @@
 package io.spidey.Services
 
 import io.reactivex.Flowable
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.spidey.Models.Node
 import io.spidey.Models.SigmaJsGraph
@@ -60,7 +59,6 @@ class TwitterService {
     private fun getPairsOfRelation(screen_name:String):List<Pair<String, String>>{
         return this.twitter.timelineOperations().getUserTimeline(screen_name,200)
                 .map { it.retweetedStatus?.fromUser ?: it.inReplyToScreenName}
-                .filterNotNull()
                 .distinct()
                 .map { Pair(screen_name, it) }
     }
