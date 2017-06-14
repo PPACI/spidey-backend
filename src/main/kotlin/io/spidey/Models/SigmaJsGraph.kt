@@ -50,21 +50,25 @@ class Node {
             else -> return false
         }
     }
+
 }
 
 /**
  * An Edge represent the link between two nodes in SigmaJS graph
  */
 class Edge(sourceNode: Node, targetNode: Node) {
+
     val id = "${sourceNode.id}-${targetNode.id}"
     val source = sourceNode.id
     val target = targetNode.id
+
 }
 
 /**
  * A SigmaJsGraph is the SigmaJS data format model, composed of nodes and edges
  */
 class SigmaJsGraph {
+
     val nodes = HashSet<Node>()
     val edges = HashSet<Edge>()
 
@@ -74,4 +78,5 @@ class SigmaJsGraph {
         this.edges.add(edge)
         return this
     }
+
 }

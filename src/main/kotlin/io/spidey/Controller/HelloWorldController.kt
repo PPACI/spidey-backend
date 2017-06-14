@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/")
 class HelloWorldController constructor(val twitterService: TwitterService) {
+
     val logger: Logger = LoggerFactory.getLogger(this.javaClass.name)
 
     @GetMapping
@@ -25,17 +26,17 @@ class HelloWorldController constructor(val twitterService: TwitterService) {
 
     @GetMapping("/user/{screenName}")
     fun getUser(@PathVariable screenName: String): Single<TwitterUser> {
-        logger.info("[getUserTimer] for user: $screenName")
+        logger.info("[getUser] for user: $screenName")
 
         return this.twitterService.getUserDetails(screenName)
     }
 
     @GetMapping("/graph/{screenName}")
     fun getUserGraph(@PathVariable screenName: String): Single<SigmaJsGraph> {
-        logger.info("[buildGraph] for user: $screenName")
+        logger.info("[getUserGraph] for user: $screenName")
 
         return this.twitterService.buildGraph(screenName)
-                .doOnSuccess { graph -> logger.info("[buildGraph] Graph results: ${graph.nodes.size} nodes and ${graph.edges.size} edges") }
+                .doOnSuccess { graph -> logger.info("[getUserGraph] Graph results: ${graph.nodes.size} nodes and ${graph.edges.size} edges") }
     }
 
 }
