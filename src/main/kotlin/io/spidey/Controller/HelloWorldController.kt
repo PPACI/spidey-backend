@@ -30,13 +30,11 @@ class HelloWorldController constructor(val twitterService: TwitterService) {
     }
 
     @GetMapping("/graph/{screenName}")
-    fun getUserGraph(@PathVariable screenName: String): SigmaJsGraph {
+    fun getUserGraph(@PathVariable screenName: String): Single<SigmaJsGraph> {
         logger.info("[buildGraph] for user: $screenName")
 
-        val graph =  this.twitterService.buildGraph(screenName)
-        logger.info("[buildGraph] Graph results: ${graph.nodes.size} nodes and ${graph.edges.size} edges")
-
-        return graph
+        return this.twitterService.buildGraph(screenName)
+                .doOnSuccess { graph -> logger.info("[buildGraph] Graph results: ${graph.nodes.size} nodes and ${graph.edges.size} edges") }
     }
 
 }

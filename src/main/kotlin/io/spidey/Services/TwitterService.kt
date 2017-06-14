@@ -1,6 +1,7 @@
 package io.spidey.Services
 
 import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.spidey.Models.Node
 import io.spidey.Models.SigmaJsGraph
@@ -17,13 +18,13 @@ class TwitterService {
 
     fun getHelloWorldTweets(number: Int): Flowable<Tweet> {
         return Flowable.fromIterable(this.twitter.searchOperations().search(
-            SearchParameters("hello world").count(number)
+                SearchParameters("hello world").count(number)
         ).tweets)
     }
 
     fun getUserDetails(screenName: String): Single<TwitterUser> {
         return Single.just(this.twitter.userOperations().getUserProfile(screenName))
-                      .map { profileToUser(it) }
+                .map { profileToUser(it) }
     }
 
     /**
@@ -33,42 +34,41 @@ class TwitterService {
      * In case of reply, we could directly extract the author.
      * A function to do this job depending on retweet/reply status and returning a user_name should be done.
      */
-    fun buildGraph(screenName: String): SigmaJsGraph {
+    fun buildGraph(screenName: String): Single<SigmaJsGraph> {
         val graph = SigmaJsGraph()
 
-        val firstLevel = Flowable
+        val firstLevel = Observable
                 .fromIterable(getPairsOfRelation(screenName))
                 .take(100)
 
         val secondLevel = firstLevel
-                .flatMap { pair -> Flowable.fromIterable(getPairsOfRelation(pair.second)) }
+                .flatMap { pair -> Observable.fromIterable(getPairsOfRelation(pair.second)) }
                 .take(300)
 
         val thirdLevel = secondLevel
-                .flatMap { pair -> Flowable.fromIterable(getPairsOfRelation(pair.second)) }
+                .flatMap { pair -> Observable.fromIterable(getPairsOfRelation(pair.second)) }
                 .take(500)
 
-        Flowable.merge(firstLevel, secondLevel, thirdLevel)
+        return Observable.merge(firstLevel, secondLevel, thirdLevel)
                 .distinct()
                 .map { Pair(Node(it.first), Node(it.second)) }
-                .subscribe { graph.addRelation(sourceNode = it.first, targetNode = it.second) }
+                .reduceWith({ SigmaJsGraph() }, { graph, pair -> graph.addRelation(sourceNode = pair.first, targetNode = pair.second) })
 
-        return graph
     }
 
-    private fun getPairsOfRelation(screen_name:String):List<Pair<String, String>>{
-        return this.twitter.timelineOperations().getUserTimeline(screen_name,200)
-                .map { it.retweetedStatus?.fromUser ?: it.inReplyToScreenName}
+    private fun getPairsOfRelation(screen_name: String): List<Pair<String, String>> {
+        return this.twitter.timelineOperations().getUserTimeline(screen_name, 200)
+                .map { it.retweetedStatus?.fromUser ?: it.inReplyToScreenName }
                 .distinct()
                 .map { Pair(screen_name, it) }
     }
 
     private fun profileToUser(profile: TwitterProfile): TwitterUser {
         return TwitterUser(
-            userName = profile.screenName,
-            description = profile.description,
-            profilePictureUrl = profile.profileImageUrl,
-            bannerPictureUrl = profile.profileBannerUrl
+                userName = profile.screenName,
+                description = profile.description,
+                profilePictureUrl = profile.profileImageUrl,
+                bannerPictureUrl = profile.profileBannerUrl
         )
     }
 }

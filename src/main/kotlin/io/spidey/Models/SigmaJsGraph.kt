@@ -68,9 +68,10 @@ class SigmaJsGraph {
     val nodes = HashSet<Node>()
     val edges = HashSet<Edge>()
 
-    fun addRelation(sourceNode:Node, targetNode: Node){
+    fun addRelation(sourceNode:Node, targetNode: Node):SigmaJsGraph{
         this.nodes.addAll(arrayOf(sourceNode,targetNode))
         val edge = Edge(sourceNode = sourceNode, targetNode = targetNode)
         this.edges.add(edge)
+        return this
     }
 }
