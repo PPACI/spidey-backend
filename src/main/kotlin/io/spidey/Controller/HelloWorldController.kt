@@ -5,6 +5,7 @@ import io.reactivex.Single
 import io.spidey.Models.SigmaJsGraph
 import io.spidey.Models.TwitterUser
 import io.spidey.Services.TwitterService
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.social.twitter.api.Tweet
 import org.springframework.web.bind.annotation.*
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/")
 class HelloWorldController constructor(val twitterService: TwitterService) {
-    val logger = LoggerFactory.getLogger(this.javaClass.name)
+    val logger: Logger = LoggerFactory.getLogger(this.javaClass.name)
 
     @GetMapping
     fun hello(): Single<String> = Single.just("hello world").map { it.toUpperCase() }
