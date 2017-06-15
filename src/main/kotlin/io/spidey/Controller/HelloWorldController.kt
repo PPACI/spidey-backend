@@ -36,7 +36,6 @@ class HelloWorldController constructor(val twitterService: TwitterService) {
         logger.info("[getUserGraph] for user: $screenName")
 
         return this.twitterService.buildGraph(screenName)
-                .doOnSuccess { graph -> logger.info("[getUserGraph] Graph results: ${graph.nodes.size} nodes and ${graph.edges.size} edges") }
     }
 
 }

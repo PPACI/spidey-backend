@@ -61,11 +61,12 @@ class TwitterService {
                     { SigmaJsGraph() },
                     { graph, (first, second) -> graph.addRelation(sourceNode = first, targetNode = second) }
                 )
-                .map {
+                .doOnSuccess { graph ->
                     val end = Date()
                     val elapsedSeconds = (end.time - start.time) / 1000
+
                     logger.info("[buildGraph] time for graph generation $elapsedSeconds seconds")
-                    it
+                    logger.info("[getUserGraph] Graph results: ${graph.nodes.size} nodes and ${graph.edges.size} edges")
                 }
 
     }
