@@ -35,24 +35,24 @@ class TwitterService {
      * A function to do this job depending on retweet/reply status and returning a user_name should be done.
      */
     fun buildGraph(screenName: String): Single<SigmaJsGraph> {
-        val graph = SigmaJsGraph()
 
         val firstLevel = Observable
                 .fromIterable(getPairsOfRelation(screenName))
-                .take(100)
+                .take(200)
 
         val secondLevel = firstLevel
                 .flatMap { pair -> Observable.fromIterable(getPairsOfRelation(pair.second)) }
-                .take(300)
+                .take(400)
 
         val thirdLevel = secondLevel
                 .flatMap { pair -> Observable.fromIterable(getPairsOfRelation(pair.second)) }
-                .take(500)
+                .take(600)
 
         return Observable.merge(firstLevel, secondLevel, thirdLevel)
                 .distinct()
                 .map { Pair(Node(it.first), Node(it.second)) }
                 .reduceWith({ SigmaJsGraph() }, { graph, pair -> graph.addRelation(sourceNode = pair.first, targetNode = pair.second) })
+                .map { it.trimMonoEdgeUser() }
 
     }
 
