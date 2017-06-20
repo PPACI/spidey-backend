@@ -69,8 +69,6 @@ class TwitterService {
 
     }
 
-    }
-
     private fun getPairsOfRelation(screenName: String): List<Pair<String, String>> {
         return this.twitter.timelineOperations().getUserTimeline(screenName, 200)
                 .map { it.retweetedStatus?.fromUser ?: it.inReplyToScreenName }
