@@ -57,7 +57,7 @@ class TwitterService {
         return Observable.merge(firstLevel, secondLevel, thirdLevel)
                 .distinct()
                 .map { Pair(Node(it.first), Node(it.second)) }
-                .reduceWith({ SigmaJsGraph() }, { graph, pair -> graph.addRelation(sourceNode = pair.first, targetNode = pair.second) })
+                .reduceWith({ SigmaJsGraph() }, { graph, (first, second) -> graph.addRelation(sourceNode = first, targetNode = second) })
                 .map { it.trimMonoEdgeUser() }
                 .doOnSuccess { graph ->
                     val end = Date()
@@ -68,8 +68,6 @@ class TwitterService {
                 }
 
     }
-
-
 
     private fun getPairsOfRelation(screenName: String): List<Pair<String, String>> {
         return this.twitter.timelineOperations().getUserTimeline(screenName, 200)
