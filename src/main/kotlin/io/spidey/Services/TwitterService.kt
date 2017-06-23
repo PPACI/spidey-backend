@@ -69,7 +69,7 @@ class TwitterService {
 
     }
 
-    }
+
 
     private fun getPairsOfRelation(screenName: String): List<Pair<String, String>> {
         return this.twitter.timelineOperations().getUserTimeline(screenName, 200)
