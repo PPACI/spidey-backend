@@ -6,6 +6,7 @@ import io.reactivex.Single
 import io.spidey.Models.Node
 import io.spidey.Models.SigmaJsGraph
 import io.spidey.Models.TwitterUser
+import io.spidey.repository.TweetRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.social.twitter.api.SearchParameters
@@ -13,10 +14,16 @@ import org.springframework.social.twitter.api.Tweet
 import org.springframework.social.twitter.api.TwitterProfile
 import org.springframework.social.twitter.api.impl.TwitterTemplate
 import org.springframework.stereotype.Service
+import java.time.Instant
 import java.util.*
 
 @Service
-class TwitterService {
+class TwitterService(val tweetRepository: TweetRepository) {
+
+    init {
+        val testTweet = TwitterUser(userName = "test",description = "test",profilePictureUrl = "",bannerPictureUrl = "")
+        this.tweetRepository.save(testTweet)
+    }
 
     val logger: Logger = LoggerFactory.getLogger(this.javaClass.name)
     val twitter = TwitterTemplate("qPe0o5axovP4VlGnv9bDchVwI", "yFWHo5mHwIy99jlTfgp2loSpnRlGLMwRvpNJqqFC6NQQfqal15")
@@ -63,7 +70,7 @@ class TwitterService {
                     val end = Date()
                     val elapsedSeconds = (end.time - start.time) / 1000
 
-                    logger.info("[buildGraph] time for graph generation $elapsedSeconds seconds")
+                    logger.info("[buildGraph] time for graph generation $elapsedSeconds seconds");
                     logger.info("[getUserGraph] Graph results: ${graph.nodes.size} nodes and ${graph.edges.size} edges")
                 }
 

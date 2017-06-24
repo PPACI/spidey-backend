@@ -41,13 +41,14 @@ configurations {
 }
 
 dependencies {
-//	compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
+	compile('org.springframework.boot:spring-boot-starter-data-elasticsearch')
 	compile('org.springframework.boot:spring-boot-starter-social-twitter')
 	compile('org.springframework.boot:spring-boot-starter-webflux')
 	compile("org.springframework.boot:spring-boot-starter-jetty:1.5.3.RELEASE")
 	compile("org.jetbrains.kotlin:kotlin-stdlib-jre8:${kotlinVersion}")
 	compile("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
 	compile('io.reactivex.rxjava2:rxjava')
+	compile('io.searchbox:jest')
     compile('org.springframework.boot:spring-boot-devtools')
 //	compile('io.reactivex.rxjava2:rxkotlin')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
