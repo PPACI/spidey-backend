@@ -1,7 +1,8 @@
 package io.spidey.repository
 
-import io.spidey.Models.TwitterUser
+import io.spidey.Models.Tweet
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
-import org.springframework.social.twitter.api.Tweet
 
-interface TweetRepository: ElasticsearchRepository<TwitterUser, String>
+interface TweetRepository : ElasticsearchRepository<Tweet, String>{
+    fun findByfromUser(fromUser: String): List<Tweet>
+}
