@@ -63,7 +63,7 @@ class TwitterService {
                     val end = Date()
                     val elapsedSeconds = (end.time - start.time) / 1000
 
-                    logger.info("[buildGraph] time for graph generation $elapsedSeconds seconds");
+                    logger.info("[buildGraph] time for graph generation $elapsedSeconds seconds")
                     logger.info("[getUserGraph] Graph results: ${graph.nodes.size} nodes and ${graph.edges.size} edges")
                 }
 
