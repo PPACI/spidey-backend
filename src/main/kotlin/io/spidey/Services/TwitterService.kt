@@ -14,14 +14,13 @@ import org.springframework.social.twitter.api.Tweet
 import org.springframework.social.twitter.api.TwitterProfile
 import org.springframework.social.twitter.api.impl.TwitterTemplate
 import org.springframework.stereotype.Service
-import java.time.Instant
 import java.util.*
 
 @Service
 class TwitterService(val tweetRepository: TweetRepository) {
 
     init {
-        val testTweet = TwitterUser(userName = "test",description = "test",profilePictureUrl = "",bannerPictureUrl = "")
+        val testTweet = TwitterUser(userName = "test", description = "test", profilePictureUrl = "", bannerPictureUrl = "")
         this.tweetRepository.save(testTweet)
     }
 
@@ -30,13 +29,13 @@ class TwitterService(val tweetRepository: TweetRepository) {
 
     fun getHelloWorldTweets(number: Int): Flowable<Tweet> {
         return Flowable.fromIterable(this.twitter.searchOperations().search(
-            SearchParameters("hello world").count(number)
+                SearchParameters("hello world").count(number)
         ).tweets)
     }
 
     fun getUserDetails(screenName: String): Single<TwitterUser> {
         return Single.just(this.twitter.userOperations().getUserProfile(screenName))
-                     .map { profileToUser(it) }
+                .map { profileToUser(it) }
     }
 
     /**
@@ -85,10 +84,10 @@ class TwitterService(val tweetRepository: TweetRepository) {
 
     private fun profileToUser(profile: TwitterProfile): TwitterUser {
         return TwitterUser(
-            userName = profile.screenName,
-            description = profile.description,
-            profilePictureUrl = profile.profileImageUrl,
-            bannerPictureUrl = profile.profileBannerUrl
+                userName = profile.screenName,
+                description = profile.description,
+                profilePictureUrl = profile.profileImageUrl,
+                bannerPictureUrl = profile.profileBannerUrl
         )
     }
 
