@@ -6,7 +6,6 @@ import io.reactivex.Single
 import io.spidey.Models.Node
 import io.spidey.Models.SigmaJsGraph
 import io.spidey.Models.TwitterUser
-import io.spidey.repository.TweetRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.social.twitter.api.SearchParameters
@@ -17,12 +16,7 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class TwitterService(val tweetRepository: TweetRepository) {
-
-    init {
-        val testTweet = TwitterUser(userName = "test", description = "test", profilePictureUrl = "", bannerPictureUrl = "")
-        this.tweetRepository.save(testTweet)
-    }
+class TwitterService {
 
     val logger: Logger = LoggerFactory.getLogger(this.javaClass.name)
     val twitter = TwitterTemplate("qPe0o5axovP4VlGnv9bDchVwI", "yFWHo5mHwIy99jlTfgp2loSpnRlGLMwRvpNJqqFC6NQQfqal15")
