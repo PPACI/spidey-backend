@@ -16,7 +16,7 @@ class ProfileService(val twitterService: TwitterService, val twitterUserReposito
 
     fun getUserDetails(screenName: String): Single<TwitterUser> {
         val user = this.twitterUserRepository.findByScreenName(screenName)
-        if (user != null){
+        if (user != null && user.lastUpdateDate != null && Date().time - user.lastUpdateDate.time < 2629746000){ //1 month
             this.logger.debug("user: $screenName fetched from cache")
             return Single.just(user)
         }
