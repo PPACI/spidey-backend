@@ -3,27 +3,32 @@ package io.spidey.Services
 import io.reactivex.Single
 import io.spidey.Models.TwitterUser
 import io.spidey.repository.TwitterUserRepository
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.time.Instant
-import java.time.LocalDateTime
 import java.util.*
 
 
 @Service
 class ProfileService(val twitterService: TwitterService, val twitterUserRepository: TwitterUserRepository) {
+
+    val logger: Logger = LoggerFactory.getLogger(this.javaClass.name)
+
     fun getUserDetails(screenName: String): Single<TwitterUser> {
         val user = this.twitterUserRepository.findByScreenName(screenName)
         if (user != null){
+            this.logger.debug("user: $screenName fetched from cache")
             return Single.just(user)
         }
         else{
+            this.logger.debug("user: $screenName fetched from live API")
             return this.twitterService.getTwitterProfileForScreenName(screenName)
                     .map { TwitterUser(id = it.id.toString(),
                             screenName = it.screenName,
                             bannerPictureUrl = it.profileBannerUrl,
                             profilePictureUrl = it.profileImageUrl,
                             description = it.description,
-                            lastUpdateDate = LocalDateTime.now()) }.
+                            lastUpdateDate = Date()) }.
                     doOnSuccess{this.twitterUserRepository.save(it)}
         }
     }
