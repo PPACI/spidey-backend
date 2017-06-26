@@ -1,7 +1,6 @@
 package io.spidey.Services
 
 import io.reactivex.Observable
-import io.reactivex.internal.operators.observable.ObservableFromIterable
 import io.spidey.repository.TweetRepository
 import org.springframework.stereotype.Service
 
