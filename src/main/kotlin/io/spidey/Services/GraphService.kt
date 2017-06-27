@@ -34,16 +34,13 @@ class GraphService {
     fun buildGraph(screenName: String): Single<SigmaJsGraph> {
         val start = Date()
 
-        val firstLevel = this.relationService.getPairsOfRelation(screenName)
-                .take(200)
+        val firstLevel = this.relationService.getPairsOfRelation(screenName,10)
 
         val secondLevel = firstLevel
-                .flatMap { pair -> this.relationService.getPairsOfRelation(pair.second) }
-                .take(400)
-
+                .flatMap { pair -> this.relationService.getPairsOfRelation(pair.second,10) }
+10
         val thirdLevel = secondLevel
-                .flatMap { pair -> this.relationService.getPairsOfRelation(pair.second) }
-                .take(600)
+                .flatMap { pair -> this.relationService.getPairsOfRelation(pair.second,10) }
 
         return Observable.merge(firstLevel, secondLevel, thirdLevel)
                 .distinct()
