@@ -3,6 +3,7 @@ package io.spidey.Services
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import io.spidey.Models.Node
 import io.spidey.Models.SigmaJsGraph
 import io.spidey.Models.TwitterUser
@@ -21,8 +22,7 @@ class GraphService {
 
     val logger: Logger = LoggerFactory.getLogger(this.javaClass.name)
     @Autowired
-    lateinit var relationService : RelationService
-
+    lateinit var relationService: RelationService
 
 
     /**
@@ -34,14 +34,19 @@ class GraphService {
     fun buildGraph(screenName: String): Single<SigmaJsGraph> {
         val start = Date()
 
-        val firstLevel = this.relationService.getPairsOfRelation(screenName,10)
+        val firstLevel = this.relationService.getPairsOfRelation(screenName, 10)
 
         val secondLevel = firstLevel
-                .flatMap { pair -> this.relationService.getPairsOfRelation(pair.second,10) }
-10
-        val thirdLevel = secondLevel
-                .flatMap { pair -> this.relationService.getPairsOfRelation(pair.second,10) }
+                .flatMap {
+                    Observable.just(it).subscribeOn(Schedulers.computation())
+                            .flatMap { pair -> this.relationService.getPairsOfRelation(pair.second, 10) }
+                }
 
+        val thirdLevel = secondLevel
+                .flatMap {
+                    Observable.just(it).subscribeOn(Schedulers.computation())
+                            .flatMap { pair -> this.relationService.getPairsOfRelation(pair.second, 10) }
+                }
         return Observable.merge(firstLevel, secondLevel, thirdLevel)
                 .distinct()
                 .map { Pair(Node(it.first), Node(it.second)) }
