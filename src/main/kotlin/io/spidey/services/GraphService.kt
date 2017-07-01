@@ -1,19 +1,13 @@
-package io.spidey.Services
+package io.spidey.services
 
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import io.spidey.Models.Node
-import io.spidey.Models.SigmaJsGraph
-import io.spidey.Models.TwitterUser
+import io.spidey.models.Node
+import io.spidey.models.SigmaJsGraph
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.social.twitter.api.SearchParameters
-import org.springframework.social.twitter.api.Tweet
-import org.springframework.social.twitter.api.TwitterProfile
-import org.springframework.social.twitter.api.impl.TwitterTemplate
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -21,9 +15,13 @@ import java.util.*
 class GraphService {
 
     val logger: Logger = LoggerFactory.getLogger(this.javaClass.name)
+
     @Autowired
     lateinit var relationService: RelationService
 
+    private fun getRelations(screenName: String): Observable<Pair<String, String>> {
+        return this.relationService.getPairsOfRelation(screenName, 10)
+    }
 
     /**
      * It returns an array of tweets from the selected screenName including retweets and replies.
@@ -34,19 +32,22 @@ class GraphService {
     fun buildGraph(screenName: String): Single<SigmaJsGraph> {
         val start = Date()
 
-        val firstLevel = this.relationService.getPairsOfRelation(screenName, 10)
+        val firstLevel = this.getRelations(screenName)
 
         val secondLevel = firstLevel
                 .flatMap {
-                    Observable.just(it).subscribeOn(Schedulers.computation())
-                            .flatMap { pair -> this.relationService.getPairsOfRelation(pair.second, 10) }
+                    Observable.just(it)
+                        .subscribeOn(Schedulers.computation())
+                        .flatMap { pair -> this.getRelations(pair.second) }
                 }
 
         val thirdLevel = secondLevel
                 .flatMap {
-                    Observable.just(it).subscribeOn(Schedulers.computation())
-                            .flatMap { pair -> this.relationService.getPairsOfRelation(pair.second, 10) }
+                    Observable.just(it)
+                        .subscribeOn(Schedulers.computation())
+                        .flatMap { pair -> this.getRelations(pair.second) }
                 }
+
         return Observable.merge(firstLevel, secondLevel, thirdLevel)
                 .distinct()
                 .map { Pair(Node(it.first), Node(it.second)) }

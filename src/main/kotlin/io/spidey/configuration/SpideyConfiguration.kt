@@ -1,4 +1,4 @@
-package io.spidey.Configuration
+package io.spidey.configuration
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

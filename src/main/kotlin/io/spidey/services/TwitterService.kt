@@ -1,6 +1,5 @@
-package io.spidey.Services
+package io.spidey.services
 
-import io.reactivex.Observable
 import io.reactivex.Single
 import org.springframework.social.twitter.api.Tweet
 import org.springframework.social.twitter.api.TwitterProfile

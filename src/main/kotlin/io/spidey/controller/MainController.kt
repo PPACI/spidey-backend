@@ -1,14 +1,12 @@
-package io.spidey.Controller
+package io.spidey.controller
 
-import io.reactivex.Flowable
 import io.reactivex.Single
-import io.spidey.Models.SigmaJsGraph
-import io.spidey.Models.TwitterUser
-import io.spidey.Services.GraphService
-import io.spidey.Services.ProfileService
+import io.spidey.models.SigmaJsGraph
+import io.spidey.models.TwitterUser
+import io.spidey.services.GraphService
+import io.spidey.services.ProfileService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.social.twitter.api.Tweet
 import org.springframework.web.bind.annotation.*
 
 @RestController

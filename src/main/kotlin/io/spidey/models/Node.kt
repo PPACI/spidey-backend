@@ -1,4 +1,4 @@
-package io.spidey.Models
+package io.spidey.models
 
 import java.util.*
 

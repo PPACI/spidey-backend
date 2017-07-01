@@ -1,7 +1,7 @@
-package io.spidey.Services
+package io.spidey.services
 
 import io.reactivex.Single
-import io.spidey.Models.TwitterUser
+import io.spidey.models.TwitterUser
 import io.spidey.repository.TwitterUserRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

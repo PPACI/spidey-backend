@@ -1,4 +1,4 @@
-package io.spidey.Models
+package io.spidey.models
 
 /**
  * An Edge represent the link between two nodes in SigmaJS graph
