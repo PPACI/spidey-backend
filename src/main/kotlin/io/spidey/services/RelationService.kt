@@ -10,7 +10,7 @@ import java.util.*
 
 
 @Service
-class RelationService(val twitterService: TwitterService, val tweetRepository: TweetRepository) {
+class RelationService(val twitterService: TwitterService, val tweetRepository: TweetRepository, val tweetSaverService: TweetSaverService) {
 
     val logger: Logger = LoggerFactory.getLogger(this.javaClass.name)
 
@@ -36,7 +36,7 @@ class RelationService(val twitterService: TwitterService, val tweetRepository: T
                     .sorted { t1, t2 -> t1.createdAt.compareTo(t2.createdAt) }
                     .takeLast(limit)
                     .doOnNext {
-                        this.tweetRepository.save(
+                        this.tweetSaverService.saveTweet(
                                 Tweet(
                                         id = it.id,
                                         fromUser = it.fromUser,

@@ -20,7 +20,7 @@ class GraphService {
     lateinit var relationService: RelationService
 
     private fun getRelations(screenName: String): Observable<Pair<String, String>> {
-        return this.relationService.getPairsOfRelation(screenName, 10)
+        return this.relationService.getPairsOfRelation(screenName, 15)
     }
 
     /**
@@ -33,20 +33,26 @@ class GraphService {
         val start = Date()
 
         val firstLevel = this.getRelations(screenName)
+                .doOnComplete { this.logger.debug("finished lvl 1") }
+
 
         val secondLevel = firstLevel
                 .flatMap {
                     Observable.just(it)
-                        .subscribeOn(Schedulers.computation())
-                        .flatMap { pair -> this.getRelations(pair.second) }
+                            .subscribeOn(Schedulers.io())
+                            .flatMap { pair -> this.getRelations(pair.second) }
                 }
+                .doOnComplete { this.logger.debug("finished lvl 2") }
 
         val thirdLevel = secondLevel
                 .flatMap {
                     Observable.just(it)
-                        .subscribeOn(Schedulers.computation())
-                        .flatMap { pair -> this.getRelations(pair.second) }
+                            .subscribeOn(Schedulers.io())
+                            .flatMap { pair -> this.getRelations(pair.second) }
                 }
+                .doOnComplete { this.logger.debug("finished lvl 3") }
+
+
 
         return Observable.merge(firstLevel, secondLevel, thirdLevel)
                 .distinct()
