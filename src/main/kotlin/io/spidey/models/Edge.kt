@@ -3,7 +3,7 @@ package io.spidey.models
 /**
  * An Edge represent the link between two nodes in SigmaJS graph
  */
-class Edge(sourceNode: Node, targetNode: Node) {
+class Edge(sourceNode: Node, targetNode: Node, val type: String = "arrow") {
 
     val id = "${sourceNode.id}-${targetNode.id}"
     val source = sourceNode.id
