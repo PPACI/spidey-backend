@@ -14,7 +14,9 @@ import java.util.*
 @Service
 class GraphService {
 
-    val logger: Logger = LoggerFactory.getLogger(this.javaClass.name)
+    companion object {
+        val logger: Logger = LoggerFactory.getLogger(GraphService::class.java.name)
+    }
 
     @Autowired
     lateinit var relationService: RelationService
@@ -31,10 +33,10 @@ class GraphService {
      */
     fun buildGraph(screenName: String): Single<SigmaJsGraph> {
         val start = Date()
-        val initialNode = Node(label = screenName, color = "#000")
+        val initialNode = Node(label = screenName, color = RelationService.levelColors[1]!!)
 
         val firstLevel = this.getRelations(initialNode, level = 1)
-                .doOnComplete { this.logger.debug("finished lvl 1") }
+                .doOnComplete { logger.debug("finished lvl 1") }
 
 
         val secondLevel = firstLevel
@@ -43,7 +45,7 @@ class GraphService {
                             .subscribeOn(Schedulers.io())
                             .flatMap { pair -> this.getRelations(pair.second, level = 2) }
                 }
-                .doOnComplete { this.logger.debug("finished lvl 2") }
+                .doOnComplete { logger.debug("finished lvl 2") }
 
         val thirdLevel = secondLevel
                 .flatMap {
@@ -51,7 +53,7 @@ class GraphService {
                             .subscribeOn(Schedulers.io())
                             .flatMap { pair -> this.getRelations(pair.second, level = 3) }
                 }
-                .doOnComplete { this.logger.debug("finished lvl 3") }
+                .doOnComplete { logger.debug("finished lvl 3") }
 
 
 

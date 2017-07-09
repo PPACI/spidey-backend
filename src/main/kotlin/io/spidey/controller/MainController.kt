@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/")
 class MainController constructor(val twitterService: GraphService, val profileService: ProfileService) {
 
-    val logger: Logger = LoggerFactory.getLogger(this.javaClass.name)
+    companion object {
+        val logger: Logger = LoggerFactory.getLogger(MainController::class.java.name)
+    }
 
     @GetMapping("/user/{screenName}")
     fun getUser(@PathVariable screenName: String): Single<TwitterUser> {
