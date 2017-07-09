@@ -19,8 +19,8 @@ class GraphService {
     @Autowired
     lateinit var relationService: RelationService
 
-    private fun getRelations(screenName: String): Observable<Pair<String, String>> {
-        return this.relationService.getPairsOfRelation(screenName, 15)
+    private fun getRelations(fromNode: Node, level: Int): Observable<Pair<Node, Node>> {
+        return this.relationService.getPairsOfRelation(fromNode, 15, level)
     }
 
     /**
@@ -31,8 +31,9 @@ class GraphService {
      */
     fun buildGraph(screenName: String): Single<SigmaJsGraph> {
         val start = Date()
+        val initialNode = Node(label = screenName, color = "#000")
 
-        val firstLevel = this.getRelations(screenName)
+        val firstLevel = this.getRelations(initialNode, level = 1)
                 .doOnComplete { this.logger.debug("finished lvl 1") }
 
 
@@ -40,7 +41,7 @@ class GraphService {
                 .flatMap {
                     Observable.just(it)
                             .subscribeOn(Schedulers.io())
-                            .flatMap { pair -> this.getRelations(pair.second) }
+                            .flatMap { pair -> this.getRelations(pair.second, level = 2) }
                 }
                 .doOnComplete { this.logger.debug("finished lvl 2") }
 
@@ -48,7 +49,7 @@ class GraphService {
                 .flatMap {
                     Observable.just(it)
                             .subscribeOn(Schedulers.io())
-                            .flatMap { pair -> this.getRelations(pair.second) }
+                            .flatMap { pair -> this.getRelations(pair.second, level = 3) }
                 }
                 .doOnComplete { this.logger.debug("finished lvl 3") }
 
@@ -56,7 +57,6 @@ class GraphService {
 
         return Observable.merge(firstLevel, secondLevel, thirdLevel)
                 .distinct()
-                .map { Pair(Node(it.first), Node(it.second)) }
                 .reduceWith({ SigmaJsGraph() }, { graph, (first, second) -> graph.addRelation(sourceNode = first, targetNode = second) })
                 .map { it.trimMonoEdgeUser() }
                 .doOnSuccess { graph ->
