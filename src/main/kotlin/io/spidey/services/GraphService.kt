@@ -5,6 +5,7 @@ import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import io.spidey.models.Node
 import io.spidey.models.SigmaJsGraph
+import io.spidey.models.TwitterUser
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,6 +21,9 @@ class GraphService {
 
     @Autowired
     lateinit var relationService: RelationService
+
+    @Autowired
+    lateinit var profileService: ProfileService
 
     private fun getRelations(fromNode: Node, level: Int): Observable<Pair<Node, Node>> {
         return this.relationService.getPairsOfRelation(fromNode, 15, level)
@@ -61,6 +65,15 @@ class GraphService {
                 .distinct()
                 .reduceWith({ SigmaJsGraph() }, { graph, (first, second) -> graph.addRelation(sourceNode = first, targetNode = second) })
                 .map { it.trimMonoEdgeUser() }
+                .map {
+                    it.nodes.forEach {
+                        this.profileService.getUserDetails(it.id).subscribe {
+                            userProfile -> it.size = getScaledFollowerCount(userProfile)
+                            // ok c'est laid, la flemme de recrer un nouveau node :)
+                        }
+                    }
+                    it
+                }
                 .doOnSuccess { graph ->
                     val end = Date()
                     val elapsedSeconds = (end.time - start.time) / 1000
@@ -70,5 +83,7 @@ class GraphService {
                 }
 
     }
+
+    private fun getScaledFollowerCount(userProfile: TwitterUser) = Math.log(userProfile.followerCount!!.toDouble()).toFloat()
 
 }

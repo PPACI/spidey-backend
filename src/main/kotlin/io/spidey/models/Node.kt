@@ -13,7 +13,7 @@ class Node {
 
     val id: String
     val label: String
-    val size: Float
+    var size: Float
     val color: String
     val x: Int
     val y: Int

@@ -28,12 +28,13 @@ class ProfileService(val twitterService: TwitterService, val twitterUserReposito
             return this.twitterService.getTwitterProfileForScreenName(screenName)
                     .map {
                         TwitterUser(
-                            id = it.id.toString(),
-                            screenName = it.screenName,
-                            bannerPictureUrl = it.profileBannerUrl,
-                            profilePictureUrl = it.profileImageUrl,
-                            description = it.description,
-                            lastUpdateDate = Date()
+                                id = it.id.toString(),
+                                screenName = it.screenName,
+                                bannerPictureUrl = it.profileBannerUrl,
+                                profilePictureUrl = it.profileImageUrl,
+                                description = it.description,
+                                followerCount = it.followersCount,
+                                lastUpdateDate = Date()
                         )
                     }
                     .doOnSuccess { this.twitterUserRepository.save(it) }
