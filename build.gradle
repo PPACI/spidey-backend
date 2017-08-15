@@ -30,6 +30,11 @@ compileTestKotlin {
 	kotlinOptions.jvmTarget = "1.8"
 }
 
+jar {
+	baseName = 'spidey-backend'
+	version = 0.1
+}
+
 repositories {
 	mavenCentral()
 	maven { url "https://repo.spring.io/snapshot" }
@@ -50,6 +55,5 @@ dependencies {
 	compile('io.reactivex.rxjava2:rxjava')
 	compile('io.searchbox:jest')
     compile('org.springframework.boot:spring-boot-devtools')
-//	compile('io.reactivex.rxjava2:rxkotlin')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
