@@ -1,7 +1,9 @@
 package io.spidey.services
 
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.parallel.ParallelFlowable
 import io.reactivex.schedulers.Schedulers
 import io.spidey.models.Node
 import io.spidey.models.SigmaJsGraph
@@ -25,7 +27,7 @@ class GraphService {
     @Autowired
     lateinit var profileService: ProfileService
 
-    private fun getRelations(fromNode: Node, level: Int): Observable<Pair<Node, Node>> {
+    private fun getRelations(fromNode: Node, level: Int): Flowable<Pair<Node, Node>> {
         return this.relationService.getPairsOfRelation(fromNode, 15, level)
     }
 
@@ -44,31 +46,30 @@ class GraphService {
 
 
         val secondLevel = firstLevel
-                .flatMap {
-                    Observable.just(it)
-                            .subscribeOn(Schedulers.io())
-                            .flatMap { pair -> this.getRelations(pair.second, level = 2) }
-                }
+                .parallel(50)
+                .runOn(Schedulers.io())
+                .flatMap { pair -> this.getRelations(pair.second, level = 2) }
+                .sequential()
                 .doOnComplete { logger.debug("finished lvl 2") }
 
         val thirdLevel = secondLevel
-                .flatMap {
-                    Observable.just(it)
-                            .subscribeOn(Schedulers.io())
-                            .flatMap { pair -> this.getRelations(pair.second, level = 3) }
-                }
+                .parallel(50)
+                .runOn(Schedulers.io())
+                .flatMap { pair -> this.getRelations(pair.second, level = 3) }
+                .sequential()
                 .doOnComplete { logger.debug("finished lvl 3") }
 
 
 
-        return Observable.merge(firstLevel, secondLevel, thirdLevel)
+        return Flowable.merge(firstLevel, secondLevel, thirdLevel)
                 .distinct()
                 .reduceWith({ SigmaJsGraph() }, { graph, (first, second) -> graph.addRelation(sourceNode = first, targetNode = second) })
                 .map { it.trimMonoEdgeUser() }
                 .map {
                     it.nodes.forEach {
                         this.profileService.getUserDetails(it.id).subscribe {
-                            userProfile -> it.size = getScaledFollowerCount(userProfile)
+                            userProfile ->
+                            it.size = getScaledFollowerCount(userProfile)
                             // ok c'est laid, la flemme de recrer un nouveau node :)
                         }
                     }

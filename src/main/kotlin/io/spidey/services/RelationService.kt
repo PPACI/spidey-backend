@@ -1,5 +1,6 @@
 package io.spidey.services
 
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.spidey.models.Node
 import io.spidey.models.Tweet
@@ -23,7 +24,7 @@ class RelationService(val twitterService: TwitterService, val tweetRepository: T
         )
     }
 
-    fun getPairsOfRelation(fromNode: Node, limit: Int, level: Int): Observable<Pair<Node, Node>> {
+    fun getPairsOfRelation(fromNode: Node, limit: Int, level: Int): Flowable<Pair<Node, Node>> {
 
         val cacheTweets = this.tweetRepository.findByfromUser(fromNode.id)
         val lastFetchedAt = cacheTweets.sortedByDescending { it.fetchedAt }.elementAtOrNull(0)?.fetchedAt
@@ -31,7 +32,7 @@ class RelationService(val twitterService: TwitterService, val tweetRepository: T
         if (lastFetchedAt != null && Date().time - lastFetchedAt.time < 604800000) { // 1 week
             logger.debug("fetched $fromNode tweets from cache")
 
-            return Observable.fromIterable(cacheTweets)
+            return Flowable.fromIterable(cacheTweets)
                     .sorted { t1, t2 -> t1.createdAt?.compareTo(t2.createdAt) ?: 0 }
                     .takeLast(limit)
                     .map { it.retweedFromScreenName ?: it.replyToScreenName ?: "" }
@@ -48,7 +49,7 @@ class RelationService(val twitterService: TwitterService, val tweetRepository: T
 
             val creationDate = Date()
 
-            return Observable.fromIterable(this.twitterService.getUserTimelineForScreenName(fromNode.id))
+            return Flowable.fromIterable(this.twitterService.getUserTimelineForScreenName(fromNode.id))
                     .filter { it.retweetedStatus != null || it.inReplyToScreenName != "null" }
                     .sorted { t1, t2 -> t1.createdAt.compareTo(t2.createdAt) }
                     .takeLast(limit)
