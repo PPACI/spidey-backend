@@ -2,6 +2,7 @@ package io.spidey.services
 
 import io.reactivex.Single
 import org.springframework.social.NotAuthorizedException
+import org.springframework.social.ResourceNotFoundException
 import org.springframework.social.twitter.api.Tweet
 import org.springframework.social.twitter.api.TwitterProfile
 import org.springframework.social.twitter.api.impl.TwitterTemplate
@@ -19,9 +20,11 @@ class TwitterService {
     fun getUserTimelineForScreenName(screenName: String): List<Tweet> {
         try {
             return this.twitter.timelineOperations().getUserTimeline(screenName, 200)
-        }
-        catch (e: NotAuthorizedException){
+        } catch (e: NotAuthorizedException) {
+            return emptyList()
+        } catch (e: ResourceNotFoundException) {
             return emptyList()
         }
+
     }
 }
