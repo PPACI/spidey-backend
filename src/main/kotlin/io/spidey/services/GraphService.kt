@@ -28,7 +28,7 @@ class GraphService {
     lateinit var profileService: ProfileService
 
     private fun getRelations(fromNode: Node, level: Int): Flowable<Pair<Node, Node>> {
-        return this.relationService.getPairsOfRelation(fromNode, 15, level)
+        return this.relationService.getPairsOfRelation(fromNode, 10, level)
     }
 
     /**
@@ -46,14 +46,14 @@ class GraphService {
 
 
         val secondLevel = firstLevel
-                .parallel(50)
+                .parallel(4)
                 .runOn(Schedulers.io())
                 .flatMap { pair -> this.getRelations(pair.second, level = 2) }
                 .sequential()
                 .doOnComplete { logger.debug("finished lvl 2") }
 
         val thirdLevel = secondLevel
-                .parallel(50)
+                .parallel(4)
                 .runOn(Schedulers.io())
                 .flatMap { pair -> this.getRelations(pair.second, level = 3) }
                 .sequential()

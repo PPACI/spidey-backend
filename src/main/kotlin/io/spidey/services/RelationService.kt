@@ -53,7 +53,7 @@ class RelationService(val twitterService: TwitterService, val tweetRepository: T
                     .filter { it.retweetedStatus != null || it.inReplyToScreenName != "null" }
                     .sorted { t1, t2 -> t1.createdAt.compareTo(t2.createdAt) }
                     .takeLast(limit)
-                    .doOnNext {
+                    .map {
                         this.tweetSaverService.saveTweet(
                             Tweet(
                                 id = it.id,
@@ -64,6 +64,7 @@ class RelationService(val twitterService: TwitterService, val tweetRepository: T
                                 fetchedAt = creationDate
                             )
                         )
+                        it
                     }
                     .map { it.retweetedStatus?.fromUser ?: it.inReplyToScreenName ?: "" }
                     .filter { it != "" }
